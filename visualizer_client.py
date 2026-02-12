@@ -24,6 +24,8 @@ def main():
     sim.connect()
     
     running = True
+    last_packet_time = time.time()
+    cached_state = None
     
     try:
         while running:
@@ -40,12 +42,16 @@ def main():
                         sim.send_move_command(0, 50, 50)
 
             # Get State
-            state = sim.get_latest_state()
+            new_state = sim.get_latest_state()
+            if new_state:
+                cached_state = new_state
+                last_packet_time = time.time()
             
             # Render
             screen.fill(cp.Colors.arenaBackground)
             
-            if state:
+            if cached_state:
+                state = cached_state
                 # 1. Draw Grid (Heatmap)
                 if 'grid' in state:
                     grid = state['grid'] # numpy array
@@ -112,7 +118,8 @@ def main():
                 for i, t in enumerate(infos):
                     ts = font.render(t, True, cp.Colors.uiText)
                     screen.blit(ts, (10, 10 + i*20))
-            else:
+
+            if time.time() - last_packet_time > 0.1:
                 txt = font.render("Waiting for Sim...", True, cp.Colors.uiText)
                 screen.blit(txt, (SCREEN_W//2 - 50, SCREEN_H//2))
 
