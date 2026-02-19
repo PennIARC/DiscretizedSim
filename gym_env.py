@@ -3,6 +3,7 @@ import numpy as np
 from gymnasium import spaces
 from core.simulation import GridSimulation
 from core import config as cp
+import time
 
 class IARCGymEnv(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 60}
@@ -10,7 +11,7 @@ class IARCGymEnv(gym.Env):
     def __init__(self, render_mode=None):
         self.sim = GridSimulation()
         self.render_mode = render_mode
-        self.dt = 1.0 / 60.0
+        self.last_time = time.time()
         
         # Observation Space: Needs to be defined based on what the agent sees
         # For now, let's just expose drone positions and velocities as a flat vector
@@ -35,6 +36,7 @@ class IARCGymEnv(gym.Env):
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         self.sim = GridSimulation() # Reset logic
+        self.last_time = time.time()
         return self._get_obs(), {}
 
     def step(self, action):
@@ -50,7 +52,11 @@ class IARCGymEnv(gym.Env):
         # Step Physics
         # Maybe step multiple times if control freq < physics freq?
         # For now 1:1
-        self.sim.step(self.dt)
+        current_time = time.time()
+        dt = current_time - self.last_time
+        self.last_time = current_time
+        
+        self.sim.step(dt)
         
         obs = self._get_obs()
         reward = self._calculate_reward()
