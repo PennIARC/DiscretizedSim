@@ -5,13 +5,19 @@ ARENA_WIDTH_FT = 300.0
 ARENA_HEIGHT_FT = 80.0
 BACKGROUND_COLOR = (20, 25, 30)
 
+
+# --- RL Specifics ---
+RL_MAX_WAYPOINT_DIST = 10.0  # Max distance a single action can request
+RL_HISTORY_LEN = 3           # Number of past frames to stack (handling delay)
+
+
 # --- Physics & Rules ---
 NUM_DRONES = 4
-DRONE_RADIUS_FT = 0.5        # Physical collision radius
-DETECTION_RADIUS_FT = 6.0   # Sensing radius
-MAX_SPEED_FT = 200.0          # ft/s
-MAX_ACCEL_FT = 200.0          # ft/s^2 (Extremely snappy)
-TURN_RATE_RAD = 50.0          # rad/s
+DRONE_RADIUS_FT = 0.5        
+DETECTION_RADIUS_FT = 6.0   
+MAX_SPEED_FT = 15.0          # REDUCED: Low top speed for reliable detection
+MAX_ACCEL_FT = 80.0          # HIGH: Very snappy/responsive
+TURN_RATE_RAD = 50.0    
 
 # --- PID Control ---
 PID_KP = 80.0
